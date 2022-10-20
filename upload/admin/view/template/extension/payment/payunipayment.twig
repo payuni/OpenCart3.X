@@ -1,0 +1,170 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right form-inline">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label class="control-label"><span class="help" title="{{ help_store }}" data-toggle="tooltip">{{ entry_store }}</span></label>
+                    </span>
+                    <select class="form-control" onchange="location=this.value" name="store_id">
+                        {% for store in multistore %}
+                            <option value="{{ store.href }}" {{ store_id == store.store_id ? "selected" : "" }}>{{ store.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" form="form-payment" name="apply" data-toggle="tooltip" title="{{ button_apply }}" class="btn btn-success"><i class="fa fa-check"></i></button>
+                <button type="submit" form="form-payment" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+                <span class="pull-right">{{ text_info }}</span>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab-main" data-toggle="tab">{{ tab_main }}</a></li>
+                </ul>
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
+                    <div class="tab-content">
+                        <div class="tab-pane active form-horizontal" id="tab-main">
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-front-name">{{ entry_front_name }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_payunipayment_front_name" value="{{ payment_payunipayment_front_name }}" placeholder="{{ entry_front_name }}" id="input-front-name" class="form-control"/>
+                                    {% if error_front_name %}
+                                        <div class="text-danger">{{ error_front_name }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <div class="radio-inline">
+                                        <label><input type="radio" name="payment_payunipayment_status" value="1" {{ "1" == payment_payunipayment_status ? "checked" : "" }}/> {{ text_enabled }}</label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label><input type="radio" name="payment_payunipayment_status" value="0" {{ "0" == payment_payunipayment_status ? "checked" : "" }}/> {{ text_disabled }}</label>
+                                    </div>
+                                    {% if error_test_mode %}
+                                        <div class="text-danger">{{ error_status }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-test-mode">{{ entry_test_mode }}</label>
+                                <div class="col-sm-10">
+                                    <div class="radio-inline">
+                                        <label><input type="radio" name="payment_payunipayment_test_mode" value="1" {{ "1" == payment_payunipayment_test_mode ? "checked" : "" }}/> {{ text_enabled }}</label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label><input type="radio" name="payment_payunipayment_test_mode" value="0" {{ "0" == payment_payunipayment_test_mode ? "checked" : "" }}/> {{ text_disabled }}</label>
+                                    </div>
+                                    {% if error_test_mode %}
+                                        <div class="text-danger">{{ error_test_mode }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-merchant-id">{{ entry_merchant_id }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_payunipayment_merchant_id" value="{{ payment_payunipayment_merchant_id }}" placeholder="{{ entry_merchant_id }}" id="input-merchant-id" class="form-control"/>
+                                    {% if error_merchant_id %}
+                                        <div class="text-danger">{{ error_merchant_id }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-hash-key">{{ entry_hash_key }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_payunipayment_hash_key" value="{{ payment_payunipayment_hash_key }}" placeholder="{{ entry_hash_key }}" id="input-hash-key" class="form-control"/>
+                                    {% if error_hash_key %}
+                                        <div class="text-danger">{{ error_hash_key }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-hash-iv">{{ entry_hash_iv }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_payunipayment_hash_iv" value="{{ payment_payunipayment_hash_iv }}" placeholder="{{ entry_hash_iv }}" id="input-hash-iv" class="form-control"/>
+                                    {% if error_hash_iv %}
+                                        <div class="text-danger">{{ error_hash_iv }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-item-info">{{ entry_item_info }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_payunipayment_item_info" value="{{ payment_payunipayment_item_info }}" placeholder="{{ entry_item_info }}" id="input-item-info" class="form-control"/>
+                                    {% if error_item_info %}
+                                        <div class="text-danger">{{ error_item_info }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-order-status">{{ entry_order_status }}</label>
+                                <div class="col-sm-10">
+                                    <select name="payment_payunipayment_order_status" id="input-order-status" class="form-control">
+                                        <option value="0">{{ text_none }}</option>
+                                        {% for item in order_status_all %}
+                                            <option value="{{ item.order_status_id }}" {{ item.order_status_id == payment_payunipayment_order_status ? "selected" : "" }}>{{ item.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-order-finish-status">{{ entry_order_finish_status }}</label>
+                                <div class="col-sm-10">
+                                    <select name="payment_payunipayment_order_finish_status" id="input-order-finish-status" class="form-control">
+                                        <option value="0">{{ text_none }}</option>
+                                        {% for item in order_status_all %}
+                                            <option value="{{ item.order_status_id }}" {{ item.order_status_id == payment_payunipayment_order_finish_status ? "selected" : "" }}>{{ item.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-order-fail-status">{{ entry_order_fail_status }}</label>
+                                <div class="col-sm-10">
+                                    <select name="payment_payunipayment_order_fail_status" id="input-order-fail-status" class="form-control">
+                                        <option value="0">{{ text_none }}</option>
+                                        {% for item in order_status_all %}
+                                            <option value="{{ item.order_status_id }}" {{ item.order_status_id == payment_payunipayment_order_fail_status ? "selected" : "" }}>{{ item.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_payunipayment_sort_order" value="{{ payment_payunipayment_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{{ footer }}
+</div>
