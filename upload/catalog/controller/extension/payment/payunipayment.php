@@ -111,6 +111,20 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
             unset($this->session->data['vouchers']);
         }
 
+        // 訂單付款明細寫入歷程
+        $this->load->model('checkout/order');
+        $orderInfo = $this->model_checkout_order->getOrder($encryptInfo['MerTradeNo']);
+
+        // 訂單是待處理狀態才更新歷程
+        if ( $orderInfo['order_status_id'] == $this->configSetting['order_status'] ) {
+            $this->model_checkout_order->addOrderHistory(
+                $orderInfo['order_id'],
+                4, // 待付款
+                $this->SetNotice($encryptInfo),
+                true
+            );
+        }
+
         // 顯示的 Title
         $title = ($encryptInfo['Status'] == 'SUCCESS') ? $this->language->get('heading_title') : $this->language->get('heading_title_fail') . $encryptInfo['Message'];
 
@@ -142,11 +156,7 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
             'separator' => $this->language->get('text_separator')
         );
 
-        if ($this->customer->isLogged()) {
-            $data['text_message'] = $this->SetNotice($encryptInfo);
-        } else {
-            $data['text_message'] = sprintf($this->language->get('text_guest'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
-        }
+        $data['text_message'] = $this->SetNotice($encryptInfo);
 
         $data['continue'] = $this->url->link('common/home', 'language=' . $this->config->get('config_language'));
 
@@ -278,8 +288,8 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
             case '6': // ICP 愛金卡
                 $message .= "</br>訂單狀態：" . $trdStatus[$encryptInfo['TradeStatus']];
                 $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
-                $message .= "</br>愛金卡交易序號：" . $encryptInfo['ICPNo'];
-                $message .= "</br>付款日期時間：" . $encryptInfo['ICPPayDT'];
+                $message .= "</br>愛金卡交易序號：" . $encryptInfo['PayNo'];
+                $message .= "</br>付款日期時間：" . $encryptInfo['PayTime'];
                 break;
             default: // 預設顯示資訊
                 $message .= "</br>訂單狀態：" . $trdStatus[$encryptInfo['TradeStatus']];
