@@ -29,6 +29,7 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
 
     public function index() {
 
+		$this->load->model('checkout/order');
         // Test Mode
         if ($this->configSetting['test_mode'] == 1) {
             $data['action'] = "https://sandbox-api.payuni.com.tw/api/upp"; //測試網址
