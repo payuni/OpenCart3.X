@@ -62,6 +62,7 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
      * @return array
      */
     private function uppOnePointHandler() {
+        $this->load->model('checkout/order');
         // 訂單資料
         $orderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
         $encryptInfo = [
