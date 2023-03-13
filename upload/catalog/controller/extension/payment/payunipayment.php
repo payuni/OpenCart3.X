@@ -64,11 +64,19 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
     private function uppOnePointHandler() {
         $this->load->model('checkout/order');
         // 訂單資料
-        $orderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+        $orderInfo    = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+        // 商品資料
+        $productsInfo = $this->model_checkout_order->getOrderProducts($this->session->data['order_id']);
+        $prodDesc     = [];
+        foreach ($productsInfo as $product) {
+            $prodDesc[] = $product['name'] . ' * ' . $product['quantity'];
+        }
+
         $encryptInfo = [
             'MerID'      => $this->configSetting['merchant_id'],
             'MerTradeNo' => $orderInfo['order_id'],
             'TradeAmt'   => (int) $orderInfo['total'],
+            'ProdDesc'   => implode(';', $prodDesc),
             'ReturnURL'  => $this->url->link('extension/payment/payunipayment/returnInfo'), //幕前
             'NotifyURL'  => $this->url->link('extension/payment/payunipayment/notify'), //幕後
             'UsrMail'    => (isset($orderInfo['email'])) ? $orderInfo['email'] : '',
