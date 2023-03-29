@@ -121,20 +121,6 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
             unset($this->session->data['vouchers']);
         }
 
-        // 訂單付款明細寫入歷程
-        $this->load->model('checkout/order');
-        $orderInfo = $this->model_checkout_order->getOrder($encryptInfo['MerTradeNo']);
-
-        // 訂單是待處理狀態才更新歷程
-        if ( $orderInfo['order_status_id'] == $this->configSetting['order_status'] ) {
-            $this->model_checkout_order->addOrderHistory(
-                $orderInfo['order_id'],
-                4, // 待付款
-                $this->SetNotice($encryptInfo),
-                true
-            );
-        }
-
         // 顯示的 Title
         $title = ($encryptInfo['Status'] == 'SUCCESS') ? $this->language->get('heading_title') : $this->language->get('heading_title_fail') . $encryptInfo['Message'];
 
@@ -226,28 +212,33 @@ class ControllerExtensionPaymentPayunipayment extends Controller {
             exit();
         }
 
-        // 3. 檢查訂單狀態是否為已付款
-        if ($encryptInfo['TradeStatus'] == '1') {
-            $msg = $orderInfo['order_id'] . ' OK';  //訂單成功
-  
-            // 已付款，更新訂單狀態並寫入訂單歷程
-            $this->model_checkout_order->addOrderHistory(
-                $orderInfo['order_id'],
-                $this->configSetting['order_finish_status'],
-                $this->SetNotice($encryptInfo),
-                true
-            );
+        // 3. 檢查訂單狀態
+        switch ($encryptInfo['TradeStatus']) {
+            case '0':
+                $msg = $orderInfo['order_id'] . ' Pending';  //訂單未付款
 
-        } else {
-            $msg = "錯誤: 訂單付款失敗";
+                // 訂單未付款，更新訂單狀態並寫入訂單歷程
+                $this->model_checkout_order->addOrderHistory(
+                    $orderInfo['order_id'],
+                    4, // 待付款
+                    $this->SetNotice($encryptInfo),
+                    true
+                );
+                break;
+            case '1':
+                $msg = $orderInfo['order_id'] . ' OK';  //訂單成功
 
-            // 付款失敗，更新訂單狀態並寫入訂單歷程
-            $this->model_checkout_order->addOrderHistory(
-                $orderInfo['order_id'],
-                $this->configSetting['order_fail_status'],
-                $msg,
-                true
-            );
+                // 已付款，更新訂單狀態並寫入訂單歷程
+                $this->model_checkout_order->addOrderHistory(
+                    $orderInfo['order_id'],
+                    $this->configSetting['order_finish_status'],
+                    $this->SetNotice($encryptInfo),
+                    true
+                );
+                break;
+            default:
+                $msg = '';
+                break;
         }
 
         $this->writeLog($msg);
